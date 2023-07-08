@@ -2,24 +2,37 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\Repository\ProductRepository;
-use JMS\SerializerBundle\DependencyInjection\JMSSerializerExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
 {
-    #[Route('/products', name: 'app_all_products', methods: ['GET'])]
-    public function showAll(ProductRepository $productRepository): JsonResponse
+    // TODO - Authentication, Richardson's levels & Exception ?
+
+    #[Route('/products', name: 'show_all_products', methods: ['GET'])]
+    public function showAll(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         $products = $productRepository->findAll();
 
-        dd($products);
+        $jsonProducts = $serializer->serialize($products, 'json');
 
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ProductController.php',
-        ]);
+        return new JsonResponse($jsonProducts, JsonResponse::HTTP_OK, [], true);
+    }
+
+
+    #[Route('/products/{id}', name: 'show_one_product', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function showOne(?Product $product, SerializerInterface $serializer): JsonResponse
+    {
+        if(!$product){
+            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
+        }
+
+        $jsonProduct = $serializer->serialize($product, 'json');
+
+        return new JsonResponse($jsonProduct, JsonResponse::HTTP_OK, [], true);
     }
 }
