@@ -19,12 +19,8 @@ class UserController extends AbstractController
     // TODO - Authentication, Richardson's levels & Exception ?
 
     #[Route('/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function showAll(UserRepository $userRepository, ?Company $company, SerializerInterface $serializer): JsonResponse
+    public function showAll(UserRepository $userRepository, Company $company, SerializerInterface $serializer): JsonResponse
     {
-        if(!$company){
-            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
-        }
-
         $users = $userRepository->findBy(['company' => $company]);
 
         $jsonUsers = $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
@@ -34,20 +30,13 @@ class UserController extends AbstractController
 
 
     #[Route('/users/{userId}/company/{id}', name: 'show_one_user', methods: ['GET'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
-    public function showOne(?Company $company, int $userId, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function showOne(Company $company, int $userId, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
-        if(!$company){
-            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
-        }
-
         $user = $userRepository->find($userId);
 
-        if(!$user){
-            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
-        }
-
+        // TODO user is not yours ! & Replace all occurence of not found Exception
         if($company !== $user->getCompany()){
-            return new JsonResponse(null, JsonResponse::HTTP_UNAUTHORIZED); // or forbidden ?
+            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
         $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'showUsers']);
@@ -57,20 +46,12 @@ class UserController extends AbstractController
 
 
     #[Route('/users/{userId}/company/{id}', name: 'delete_user', methods: ['DELETE'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
-    public function delete(?Company $company, int $userId, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    public function delete(Company $company, int $userId, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
     {
-        if(!$company){
-            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
-        }
-
         $user = $userRepository->find($userId);
 
-        if(!$user){
-            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
-        }
-
         if($company !== $user->getCompany()){
-            return new JsonResponse(null, JsonResponse::HTTP_UNAUTHORIZED); // or forbidden ?
+            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
         }
 
         $company->removeUser($user);
@@ -82,13 +63,11 @@ class UserController extends AbstractController
 
 
     #[Route('/users/company/{id}', name: 'create_user', methods: ['POST'], requirements: ['id' => '\d+'])]
-    public function create(Request $request, ?Company $company, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    public function create(Request $request, Company $company, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
     {
-        if(!$company){
-            return new JsonResponse(null, JsonResponse::HTTP_NOT_FOUND);
-        }
-
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+
+        // TODO - what if field is missing or invalid ?
 
         $user->setCreatedAt(DateTimeImmutable::createFromMutable(new DateTime()))
             ->setCompany($company)
