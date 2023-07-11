@@ -13,6 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
@@ -34,10 +37,7 @@ class UserController extends AbstractController
     {
         $user = $userRepository->find($userId);
 
-        // TODO user is not yours ! & Replace all occurence of not found Exception
-        if($company !== $user->getCompany()){
-            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
-        }
+        $this->throwExceptionIfUserNotLinkedToCompany($company, $user->getCompany());
 
         $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'showUsers']);
 
@@ -50,9 +50,7 @@ class UserController extends AbstractController
     {
         $user = $userRepository->find($userId);
 
-        if($company !== $user->getCompany()){
-            return new JsonResponse(null, JsonResponse::HTTP_FORBIDDEN);
-        }
+        $this->throwExceptionIfUserNotLinkedToCompany($company, $user->getCompany());
 
         $company->removeUser($user);
         $em->remove($user);
@@ -63,11 +61,31 @@ class UserController extends AbstractController
 
 
     #[Route('/users/company/{id}', name: 'create_user', methods: ['POST'], requirements: ['id' => '\d+'])]
-    public function create(Request $request, Company $company, SerializerInterface $serializer, EntityManagerInterface $em): JsonResponse
+    public function create(
+        Request $request, 
+        Company $company, 
+        SerializerInterface $serializer, 
+        EntityManagerInterface $em,
+        ValidatorInterface $validator
+    ): JsonResponse
     {
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+        //  TODO move this code ?
+        $validationErrors = $validator->validate($user);
+        $errorsCount = count($validationErrors);
 
-        // TODO - what if field is missing or invalid ?
+        if($errorsCount > 0){
+            $formattedErrors = ['Number of validation errors' => $errorsCount];
+
+            foreach($validationErrors as $error){
+                $formattedErrors[] = [
+                    'field' => $error->getPropertyPath(),
+                    'message' => $error->getMessage()
+                ];
+            }
+
+            return new JsonResponse($serializer->serialize($formattedErrors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+        }
 
         $user->setCreatedAt(DateTimeImmutable::createFromMutable(new DateTime()))
             ->setCompany($company)
@@ -79,5 +97,13 @@ class UserController extends AbstractController
         $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'showUsers']);
 
         return new JsonResponse($jsonUser, JsonResponse::HTTP_CREATED, [], true);
+    }
+
+
+    private function throwExceptionIfUserNotLinkedToCompany(Company $currentCompany, Company $userCompany): void
+    {
+        if($currentCompany !== $userCompany){
+            throw new HttpException(JsonResponse::HTTP_FORBIDDEN, 'This user is not linked to this company.');
+        }
     }
 }

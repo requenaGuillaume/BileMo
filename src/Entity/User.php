@@ -19,21 +19,44 @@ class User
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 2, 
+        max: 50,
+        minMessage: 'Value must be at least {{ limit }} characters.',
+        maxMessage: 'Value must be have a maximum of {{ limit }} characters.'
+    )]
     #[Groups(['showUsers'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 2, 
+        max: 50,
+        minMessage: 'Value must be at least {{ limit }} characters.',
+        maxMessage: 'Value must be have a maximum of {{ limit }} characters.'
+    )]
     #[Groups(['showUsers'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Email(message: 'Value is not a valid email.')]
     #[Groups(['showUsers'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 8, 
+        max: 15,
+        minMessage: 'Value must be at least {{ limit }} characters.',
+        maxMessage: 'Value must be have a maximum of {{ limit }} characters.'
+    )]
+    #[Assert\Regex(
+        pattern: '/[(+\d]{1}[\d]+[\d\.) \-]{1}[\d (]{1}[\d]+[\d \.\-)]{1}[ \d]{1}[\d]+[\d \.\-]{1}[\d]+/',
+        message: 'Value is not a valid phone number.'
+    )]
     #[Groups(['showUsers'])]
     private ?string $phoneNumber = null;
 

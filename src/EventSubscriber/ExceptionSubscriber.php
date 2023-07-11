@@ -20,10 +20,23 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 $message = $this->getNotFoundMessage($initialMessage);
             }
 
+            if($statusCode === 403){
+                $message = $initialMessage;
+            }
+
             $data = [
                 'statusCode' => $statusCode,
                 'message' => $message
             ];
+
+            $event->setResponse(new JsonResponse($data));
+        }else{
+            $data = [
+                'statusCode' => 500,
+                'message' => 'Internal server error.'
+            ];
+
+            // TODO - Log the real error message ?
 
             $event->setResponse(new JsonResponse($data));
         }
