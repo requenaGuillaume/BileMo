@@ -12,10 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 
 class UserController extends AbstractController
 {
@@ -70,26 +71,18 @@ class UserController extends AbstractController
     ): JsonResponse
     {
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-        //  TODO move this code ?
+
         $validationErrors = $validator->validate($user);
         $errorsCount = count($validationErrors);
 
         if($errorsCount > 0){
-            $formattedErrors = ['Number of validation errors' => $errorsCount];
-
-            foreach($validationErrors as $error){
-                $formattedErrors[] = [
-                    'field' => $error->getPropertyPath(),
-                    'message' => $error->getMessage()
-                ];
-            }
+            $formattedErrors = $this->getFormattedErrors($validationErrors, $errorsCount);
 
             return new JsonResponse($serializer->serialize($formattedErrors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
         $user->setCreatedAt(DateTimeImmutable::createFromMutable(new DateTime()))
-            ->setCompany($company)
-        ;
+            ->setCompany($company);
 
         $em->persist($user);
         $em->flush();
@@ -105,5 +98,19 @@ class UserController extends AbstractController
         if($currentCompany !== $userCompany){
             throw new HttpException(JsonResponse::HTTP_FORBIDDEN, 'This user is not linked to this company.');
         }
+    }
+
+    private function getFormattedErrors(ConstraintViolationListInterface $validationErrors, int $errorsCount): array
+    {
+        $formattedErrors = ['Number of validation errors' => $errorsCount];
+
+        foreach($validationErrors as $error){
+            $formattedErrors[] = [
+                'field' => $error->getPropertyPath(),
+                'message' => $error->getMessage()
+            ];
+        }
+
+        return $formattedErrors;
     }
 }
