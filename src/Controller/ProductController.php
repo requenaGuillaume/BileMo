@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
 {
-    // TODO - Authentication, Richardson's levels & Exception ?
+    // TODO - Authentication, Richardson's levels ?
 
     #[Route('/products', name: 'show_all_products', methods: ['GET'])]
     public function showAll(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse

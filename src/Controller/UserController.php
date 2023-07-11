@@ -16,11 +16,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 
 class UserController extends AbstractController
 {
-    // TODO - Authentication, Richardson's levels & Exception ?
+    // TODO - Authentication, Richardson's levels ?
 
     #[Route('/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function showAll(UserRepository $userRepository, Company $company, SerializerInterface $serializer): JsonResponse
