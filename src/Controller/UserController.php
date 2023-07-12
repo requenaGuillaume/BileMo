@@ -21,7 +21,7 @@ class UserController extends AbstractController
 {
     // TODO - Authentication, Richardson's levels ?
 
-    #[Route('/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
+    #[Route('/api/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function showAll(UserRepository $userRepository, Company $company, SerializerInterface $serializer): JsonResponse
     {
         $users = $userRepository->findBy(['company' => $company]);
@@ -32,7 +32,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/users/{userId}/company/{id}', name: 'show_one_user', methods: ['GET'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
+    #[Route('/api/users/{userId}/company/{id}', name: 'show_one_user', methods: ['GET'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
     public function showOne(Company $company, int $userId, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
         $user = $userRepository->find($userId);
@@ -45,7 +45,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/users/{userId}/company/{id}', name: 'delete_user', methods: ['DELETE'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
+    #[Route('/api/users/{userId}/company/{id}', name: 'delete_user', methods: ['DELETE'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
     public function delete(Company $company, int $userId, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
     {
         $user = $userRepository->find($userId);
@@ -60,7 +60,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/users/company/{id}', name: 'create_user', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[Route('/api/users/company/{id}', name: 'create_user', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function create(
         Request $request, 
         Company $company, 

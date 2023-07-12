@@ -1,1 +1,78 @@
 {% extends "base.html.twig" %}
+
+{% block stylesheets %}
+    <style>
+        .bg-primary{
+            background-color : #679b69 !important;            
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1 class="text-center mt-5 mb-5">Welcome to BileMo API documentation</h1>
+
+    <table class="mx-auto table table-striped table-bordered w-75">
+        <thead>
+            <tr class="bg-dark text-light">
+                <th>Method</th>
+                <th>URI</th>
+                <th>Arguments</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-primary fw-bold">
+                <td colspan="4">Products</td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/api/products</td>
+                <td></td>
+                <td>Get the list of all products</td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/api/products/{id}</td>
+                <td>{id} : Integer</td>
+                <td>Get one product</td>
+            </tr>
+            <tr class="bg-primary fw-bold">
+                <td colspan="4">Users</td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/api/users/company/{company_id}</td>
+                <td>{company_id} : Integer</td>
+                <td>Get the list of all users linked to a company</td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/api/users/{user_id}/company/{company_id}</td>
+                <td>
+                    {user_id} : Integer
+                    <span class="d-block">{company_id} : Integer</span>                    
+                </td>
+                <td>Get one user linked to a company</td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/api/users/company/{company_id}</td>
+                <td>{company_id} : Integer</td>
+                <td>Create a new user linked to a company</td>
+            </tr>
+            <tr>
+                <td>DELETE</td>
+                <td>/api/users/{user_id}/company/{company_id}</td>
+                <td>
+                    {user_id} : Integer 
+                    <span class="d-block">{company_id} : Integer</span>
+                </td>
+                <td>Delete an user linked to a company</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 class="text-center mt-5 mb-5" id="products">Products example</h2>
+
+    <h2 class="text-center mt-5 mb-5" id="users">Users example</h2>
+{% endblock %}
