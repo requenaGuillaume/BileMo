@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -11,8 +12,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class ExceptionSubscriber implements EventSubscriberInterface
 {
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
-    {        
+    public function __construct(private UrlGeneratorInterface $urlGenerator, private LoggerInterface $logger)
+    {
     }
 
     public function onKernelException($event): void
@@ -21,10 +22,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
 // TODO handle method not allowed error
         $exception = $event->getThrowable();  
         $statusCode = $exception->getStatusCode();
+        $initialMessage = $exception->getMessage();
 
         if(str_contains($requestUri, '/api/')){                      
-            if($exception instanceof HttpException){                
-                $initialMessage = $exception->getMessage();
+            if($exception instanceof HttpException){                                
     
                 if($statusCode === 404){
                     $message = $this->getNotFoundMessage($initialMessage);
@@ -46,8 +47,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                     'message' => 'Internal server error.'
                 ];
     
-                // TODO - Log the real error message ?
-    
+                $this->logger->error("Code : $statusCode, message : $initialMessage");
                 $event->setResponse(new JsonResponse($data));
             }
         }else{
