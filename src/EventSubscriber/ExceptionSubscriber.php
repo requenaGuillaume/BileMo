@@ -4,45 +4,58 @@ namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
+
+    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    {        
+    }
+
     public function onKernelException($event): void
-    {
-        $exception = $event->getThrowable();
+    {    
+        $requestUri = $event->getRequest()->getRequestUri();
+// TODO handle method not allowed error
+        $exception = $event->getThrowable();  
+        $statusCode = $exception->getStatusCode();
 
-        // TODO if request URI contains /api/ ... do the stuff JsonException
-        // else return http route not found classic exceptions
-
-        if($exception instanceof HttpException){
-            $statusCode = $exception->getStatusCode();
-            $initialMessage = $exception->getMessage();
-
-            if($statusCode === 404){
-                $message = $this->getNotFoundMessage($initialMessage);
+        if(str_contains($requestUri, '/api/')){                      
+            if($exception instanceof HttpException){                
+                $initialMessage = $exception->getMessage();
+    
+                if($statusCode === 404){
+                    $message = $this->getNotFoundMessage($initialMessage);
+                }
+    
+                if($statusCode === 403){
+                    $message = $initialMessage;
+                }
+    
+                $data = [
+                    'statusCode' => $statusCode,
+                    'message' => $message
+                ];
+    
+                $event->setResponse(new JsonResponse($data));
+            }else{
+                $data = [
+                    'statusCode' => 500,
+                    'message' => 'Internal server error.'
+                ];
+    
+                // TODO - Log the real error message ?
+    
+                $event->setResponse(new JsonResponse($data));
             }
-
-            if($statusCode === 403){
-                $message = $initialMessage;
-            }
-
-            $data = [
-                'statusCode' => $statusCode,
-                'message' => $message
-            ];
-
-            $event->setResponse(new JsonResponse($data));
         }else{
-            $data = [
-                'statusCode' => 500,
-                'message' => 'Internal server error.'
-            ];
-
-            // TODO - Log the real error message ?
-
-            $event->setResponse(new JsonResponse($data));
+            if($statusCode === 404){
+                $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_documentation')));
+            }
         }
+    
     }
 
     public static function getSubscribedEvents(): array
