@@ -19,7 +19,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function onKernelException($event): void
     {    
         $requestUri = $event->getRequest()->getRequestUri();
-// TODO handle method not allowed error
         $exception = $event->getThrowable();  
         $statusCode = $exception->getStatusCode();
         $initialMessage = $exception->getMessage();
@@ -34,6 +33,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 if($statusCode === 403){
                     $message = $initialMessage;
                 }
+
+                if($statusCode === 405){
+                    $message = 'Method not allowed';
+                }
     
                 $data = [
                     'statusCode' => $statusCode,
@@ -45,7 +48,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 $data = [
                     'statusCode' => 500,
                     'message' => 'Internal server error.'
-                ];
+                ];                
     
                 $this->logger->error("Code : $statusCode, message : $initialMessage");
                 $event->setResponse(new JsonResponse($data));
