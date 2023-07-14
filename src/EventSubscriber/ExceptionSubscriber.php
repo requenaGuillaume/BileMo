@@ -12,6 +12,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
+        // TODO if request URI contains /api/ ... do the stuff JsonException
+        // else return http route not found classic exceptions
+
         if($exception instanceof HttpException){
             $statusCode = $exception->getStatusCode();
             $initialMessage = $exception->getMessage();
