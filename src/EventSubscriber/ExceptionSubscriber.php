@@ -17,39 +17,20 @@ class ExceptionSubscriber implements EventSubscriberInterface
     }
 
     public function onKernelException($event): void
-    {    
+    {
         $requestUri = $event->getRequest()->getRequestUri();
-        $exception = $event->getThrowable();  
+        $exception = $event->getThrowable();
         $statusCode = $exception->getStatusCode();
-        $initialMessage = $exception->getMessage();
 
-        if(str_contains($requestUri, '/api/')){                      
-            if($exception instanceof HttpException){                                
-    
-                if($statusCode === 404){
-                    $message = $this->getNotFoundMessage($initialMessage);
-                }
-    
-                if($statusCode === 403){
-                    $message = $initialMessage;
-                }
+        if(str_contains($requestUri, '/api/')){ 
+            $initialMessage = $exception->getMessage();
 
-                if($statusCode === 405){
-                    $message = 'Method not allowed';
-                }
-    
-                $data = [
-                    'statusCode' => $statusCode,
-                    'message' => $message
-                ];
-    
+            if($exception instanceof HttpException){
+                $message = $this->getErrorMessage($statusCode, $initialMessage);
+                $data = ['statusCode' => $statusCode, 'message' => $message];
                 $event->setResponse(new JsonResponse($data));
             }else{
-                $data = [
-                    'statusCode' => 500,
-                    'message' => 'Internal server error.'
-                ];                
-    
+                $data = ['statusCode' => 500, 'message' => 'Internal server error.'];
                 $this->logger->error("Code : $statusCode, message : $initialMessage");
                 $event->setResponse(new JsonResponse($data));
             }
@@ -57,8 +38,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             if($statusCode === 404){
                 $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_documentation')));
             }
-        }
-    
+        }    
     }
 
     public static function getSubscribedEvents(): array
@@ -79,6 +59,25 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
         if(!$message){
             $message = 'Resource not found.';
+        }
+
+        return $message;
+    }
+
+    private function getErrorMessage(int $statusCode, string $initialMessage): ?string
+    {
+        $message = null;
+
+        if($statusCode === 404){
+            $message = $this->getNotFoundMessage($initialMessage);
+        }
+
+        if($statusCode === 403){
+            $message = $initialMessage;
+        }
+
+        if($statusCode === 405){
+            $message = 'Method not allowed';
         }
 
         return $message;
