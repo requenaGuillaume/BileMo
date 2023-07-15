@@ -6,7 +6,9 @@ use DateTime;
 use App\Entity\User;
 use DateTimeImmutable;
 use App\Entity\Company;
+use App\Repository\SelfDiscoverabilityRepository;
 use App\Repository\UserRepository;
+use App\Service\DiscoverabilityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,41 +22,54 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 class UserController extends AbstractController
 {
     // TODO - Authentication, Richardson's levels ?
+    public function __construct(
+        private SerializerInterface $serializer, 
+        private UserRepository $userRepository,
+        private EntityManagerInterface $em,
+        private SelfDiscoverabilityRepository $selfDiscoverabilityRepository,
+        private DiscoverabilityService $discoverabilityService
+    )
+    {}
 
+    // TODO autodécouvrabilité
     #[Route('/api/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function showAll(UserRepository $userRepository, Company $company, SerializerInterface $serializer): JsonResponse
+    public function showAll(Company $company): JsonResponse
     {
-        $users = $userRepository->findBy(['company' => $company]);
+        $users = $this->userRepository->findBy(['company' => $company]);
 
-        $jsonUsers = $serializer->serialize($users, 'json', ['groups' => 'showUsers']);
+        $jsonUsers = $this->serializer->serialize($users, 'json', ['groups' => 'showUsers']);
 
         return new JsonResponse($jsonUsers, JsonResponse::HTTP_OK, [], true);
     }
 
 
     #[Route('/api/users/{userId}/company/{id}', name: 'show_one_user', methods: ['GET'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
-    public function showOne(Company $company, int $userId, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function showOne(Company $company, int $userId): JsonResponse
     {
-        $user = $userRepository->find($userId);
+        $user = $this->userRepository->find($userId);
 
         $this->throwExceptionIfUserNotLinkedToCompany($company, $user->getCompany());
 
-        $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'showUsers']);
+        $userSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'users']);
+        $links = $this->discoverabilityService->getLinks($userSelfDiscoverabilityList, $company->getId(), $userId);
+        $user->setLinks($links);
+
+        $jsonUser = $this->serializer->serialize($user, 'json', ['groups' => 'showUsers']);
 
         return new JsonResponse($jsonUser, JsonResponse::HTTP_OK, [], true);
     }
 
 
     #[Route('/api/users/{userId}/company/{id}', name: 'delete_user', methods: ['DELETE'], requirements: ['userId' => '\d+', 'id' => '\d+'])]
-    public function delete(Company $company, int $userId, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    public function delete(Company $company, int $userId): JsonResponse
     {
-        $user = $userRepository->find($userId);
+        $user = $this->userRepository->find($userId);
 
         $this->throwExceptionIfUserNotLinkedToCompany($company, $user->getCompany());
 
         $company->removeUser($user);
-        $em->remove($user);
-        $em->flush();
+        $this->em->remove($user);
+        $this->em->flush();
 
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
@@ -63,13 +78,11 @@ class UserController extends AbstractController
     #[Route('/api/users/company/{id}', name: 'create_user', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function create(
         Request $request, 
-        Company $company, 
-        SerializerInterface $serializer, 
-        EntityManagerInterface $em,
+        Company $company,
         ValidatorInterface $validator
     ): JsonResponse
     {
-        $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+        $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
         $validationErrors = $validator->validate($user);
         $errorsCount = count($validationErrors);
@@ -77,16 +90,20 @@ class UserController extends AbstractController
         if($errorsCount > 0){
             $formattedErrors = $this->getFormattedErrors($validationErrors, $errorsCount);
 
-            return new JsonResponse($serializer->serialize($formattedErrors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
+            return new JsonResponse($this->serializer->serialize($formattedErrors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
         $user->setCreatedAt(DateTimeImmutable::createFromMutable(new DateTime()))
             ->setCompany($company);
 
-        $em->persist($user);
-        $em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'showUsers']);
+        $userSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'users']);
+        $links = $this->discoverabilityService->getLinks($userSelfDiscoverabilityList, $company->getId(), $user->getId());
+        $user->setLinks($links);
+
+        $jsonUser = $this->serializer->serialize($user, 'json', ['groups' => 'showUsers']);
 
         return new JsonResponse($jsonUser, JsonResponse::HTTP_CREATED, [], true);
     }

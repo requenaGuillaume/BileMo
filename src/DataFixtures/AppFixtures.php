@@ -7,11 +7,54 @@ use App\Entity\User;
 use DateTimeImmutable;
 use App\Entity\Company;
 use App\Entity\Product;
+use App\Entity\SelfDiscoverability;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
 class AppFixtures extends Fixture
 {
+    private const PRODUCTS = [
+        [
+            'uri' => '/api/products',
+            'method' => 'GET',
+            'arguments' => [],
+            'description' => 'Get the list of all products'
+        ],
+        [
+            'uri' => '/api/products/{id}',
+            'method' => 'GET',
+            'arguments' => ['id' => 'Integer'],
+            'description' => 'Get one product'
+        ]
+    ];
+
+    private const USERS = [
+        [
+            'uri' => '/api/users/company/{company_id}',
+            'method' => 'GET',
+            'arguments' => ['company_id' => 'Integer'],
+            'description' => 'Get the list of all users linked to a company'
+        ],
+        [
+            'uri' => '/api/users/{user_id}/company/{company_id}',
+            'method' => 'GET',
+            'arguments' => ['user_id' => 'Integer', 'company_id' => 'Integer'],
+            'description' => 'Get one user linked to a company'
+        ],
+        [
+            'uri' => '/api/users/company/{company_id}',
+            'method' => 'POST',
+            'arguments' => ['company_id' => 'Integer'],
+            'description' => 'Create a new user linked to a company'
+        ],
+        [
+            'uri' => '/api/users/{user_id}/company/{company_id}',
+            'method' => 'DELETE',
+            'arguments' => ['user_id' => 'Integer', 'company_id' => 'Integer'],
+            'description' => 'Delete an user linked to a company'
+        ]
+    ];
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
@@ -50,6 +93,28 @@ class AppFixtures extends Fixture
             }
 
             $manager->persist($company);
+        }
+
+        foreach(self::PRODUCTS as $product){
+            $selfDiscoverability = new SelfDiscoverability();
+            $selfDiscoverability->setResource('products')
+                ->setUri($product['uri'])
+                ->setMethod($product['method'])
+                ->setArguments($product['arguments'])
+                ->setDescription($product['description']);
+
+            $manager->persist($selfDiscoverability);
+        }
+
+        foreach(self::USERS as $user){
+            $selfDiscoverability = new SelfDiscoverability();
+            $selfDiscoverability->setResource('users')
+                ->setUri($user['uri'])
+                ->setMethod($user['method'])
+                ->setArguments($user['arguments'])
+                ->setDescription($user['description']);
+
+            $manager->persist($selfDiscoverability);
         }
 
         $manager->flush();
