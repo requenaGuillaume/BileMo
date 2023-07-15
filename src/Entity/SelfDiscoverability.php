@@ -9,6 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SelfDiscoverabilityRepository::class)]
 class SelfDiscoverability
 {
+    public const URI_ID = '{id}';
+    public const URI_COMPANY_ID = '{company_id}';
+    public const URI_USER_ID = '{user_id}';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

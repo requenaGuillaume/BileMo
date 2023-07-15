@@ -21,7 +21,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UserController extends AbstractController
 {
-    // TODO - Authentication, Richardson's levels ?
+    // TODO - Authentication, cache, pagination ?
     public function __construct(
         private SerializerInterface $serializer, 
         private UserRepository $userRepository,
@@ -31,11 +31,14 @@ class UserController extends AbstractController
     )
     {}
 
-    // TODO autodécouvrabilité
+
     #[Route('/api/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function showAll(Company $company): JsonResponse
     {
         $users = $this->userRepository->findBy(['company' => $company]);
+
+        $userSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'users']);
+        $this->discoverabilityService->setLinksForList($users, $userSelfDiscoverabilityList, true);
 
         $jsonUsers = $this->serializer->serialize($users, 'json', ['groups' => 'showUsers']);
 

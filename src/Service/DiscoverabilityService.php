@@ -2,29 +2,39 @@
 
 namespace App\Service;
 
+use App\Entity\SelfDiscoverability;
 
 class DiscoverabilityService
 {
 
-    public function getLinks(array $selfDiscoverabilityList, ?int $mainEntityId = null, ?int $secondEntityId = null): array
+    public function setLinksForList(array &$entities, array $entitySelfDiscoverabilityList, bool $isUsersResource = false): void
     {
-        // TODO le show de tous les produits devrait afficher l'url de show one avec chaque id !
-        // TODO le show de tous les produits ne devrait apparaitre qu'une seule fois
+        foreach($entities as $entity){
+            if($isUsersResource){
+                $links = $this->getLinks($entitySelfDiscoverabilityList, $entity->getCompany()->getId(), $entity->getId());
+            }else{
+                $links = $this->getLinks($entitySelfDiscoverabilityList, $entity->getId());
+            }
+
+            $entity->setLinks($links);
+        }
+    }
+
+    public function getLinks(array $selfDiscoverabilityList, int $mainEntityId = null, ?int $secondEntityId = null): array
+    {
         $links = [];
 
         foreach($selfDiscoverabilityList as $discoverability){
             $uri = $discoverability->getUri();
 
-            if($mainEntityId && str_contains($uri, '{id}')){
-                $uri = str_replace('{id}', $mainEntityId, $uri);
+            if($mainEntityId && str_contains($uri, SelfDiscoverability::URI_ID)){
+                $uri = str_replace(SelfDiscoverability::URI_ID, $mainEntityId, $uri);
+            }elseif($mainEntityId && str_contains($uri, SelfDiscoverability::URI_COMPANY_ID)){
+                $uri = str_replace(SelfDiscoverability::URI_COMPANY_ID, $mainEntityId, $uri);
             }
 
-            if($mainEntityId && str_contains($uri, '{company_id}')){
-                $uri = str_replace('{company_id}', $mainEntityId, $uri);
-            }
-
-            if($secondEntityId && str_contains($uri, '{user_id}')){
-                $uri = str_replace('{user_id}', $secondEntityId, $uri);
+            if($secondEntityId && str_contains($uri, SelfDiscoverability::URI_USER_ID)){
+                $uri = str_replace(SelfDiscoverability::URI_USER_ID, $secondEntityId, $uri);
             }
 
             $links[] = [

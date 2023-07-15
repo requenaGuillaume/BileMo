@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ProductController extends AbstractController
 {
-    // TODO - Authentication, Richardson's levels ?
+    // TODO - Authentication, cache, pagination ?
     public function __construct(
         private SerializerInterface $serializer, 
         private SelfDiscoverabilityRepository $selfDiscoverabilityRepository,
@@ -21,11 +21,14 @@ class ProductController extends AbstractController
     )
     {}
 
-    // TODO autodécouvrabilité
+
     #[Route('/api/products', name: 'show_all_products', methods: ['GET'])]
     public function showAll(ProductRepository $productRepository): JsonResponse
     {
         $products = $productRepository->findAll();
+
+        $productSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'products']);
+        $this->discoverabilityService->setLinksForList($products, $productSelfDiscoverabilityList);
 
         $jsonProducts = $this->serializer->serialize($products, 'json');
 
