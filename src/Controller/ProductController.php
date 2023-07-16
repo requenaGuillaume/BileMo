@@ -3,17 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Repository\ProductRepository;
-use App\Repository\SelfDiscoverabilityRepository;
+use App\Service\PaginationService;
 use App\Service\DiscoverabilityService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\SelfDiscoverabilityRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProductController extends AbstractController
 {
-    // TODO - Authentication, cache, pagination ?
+    // TODO - Authentication, cache ?
     public function __construct(
         private SerializerInterface $serializer, 
         private SelfDiscoverabilityRepository $selfDiscoverabilityRepository,
@@ -23,9 +24,9 @@ class ProductController extends AbstractController
 
 
     #[Route('/api/products', name: 'show_all_products', methods: ['GET'])]
-    public function showAll(ProductRepository $productRepository): JsonResponse
+    public function showAll(Request $request, PaginationService $paginationService): JsonResponse
     {
-        $products = $productRepository->findAll();
+        $products = $paginationService->findProducts($request);
 
         $productSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'products']);
         $this->discoverabilityService->setLinksForList($products, $productSelfDiscoverabilityList);
