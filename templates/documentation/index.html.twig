@@ -38,6 +38,21 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <h3 class="text-center mt-4">Pagination</h3>
+        <p>If you want, you can use pagination on /api/products and /api/users/company/{company_id}.</p>
+        <p>
+            By default, pagination will not be used. You can add query parameter "?page=1", 
+            then the default max result will be up to 10 items.
+        </p>
+        <p>You can add the "limit" parameter like : "?page=1&limit=5" if you want to set the max result to 5 items</p>
+        <p>
+            Examples : 
+            <span class="d-block">/api/products?page=1</span>
+            <span class="d-block">/api/products?page=1&limit=5</span>
+            <span class="d-block">/api/users/company/10?page=2</span>
+            <span class="d-block">/api/users/company/10?page=2&limit=15</span>
+        </p>
     </article>
 
     <article class="bg-light w-75 mt-5 pb-4 mx-auto border">
