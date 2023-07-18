@@ -23,7 +23,7 @@ class Product
     private ?string $model = null;
 
     #[ORM\Column]
-    private ?int $priceHtInCents = null;
+    private ?int $pricePreVatInCents = null;
 
     public function getId(): ?int
     {
@@ -54,14 +54,14 @@ class Product
         return $this;
     }
 
-    public function getPriceHtInCents(): ?int
+    public function getPricePreVatInCents(): ?int
     {
-        return $this->priceHtInCents;
+        return $this->pricePreVatInCents;
     }
 
-    public function setPriceHtInCents(int $priceHtInCents): static
+    public function setPricePreVatInCents(int $pricePreVatInCents): static
     {
-        $this->priceHtInCents = $priceHtInCents;
+        $this->pricePreVatInCents = $pricePreVatInCents;
 
         return $this;
     }
