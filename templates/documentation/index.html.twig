@@ -19,54 +19,23 @@
                 </tr>
             </thead>
             <tbody>
+                {% for key, discoverabilitie in discoverabilities %}
                 <tr class="bg-primary fw-bold">
-                    <td colspan="4">Products</td>
+                    <td colspan="4">{{ key|capitalize }}</td>
                 </tr>
-                <tr>
-                    <td>GET</td>
-                    <td>/api/products</td>
-                    <td></td>
-                    <td>Get the list of all products</td>
-                </tr>
-                <tr>
-                    <td>GET</td>
-                    <td>/api/products/{id}</td>
-                    <td>{id} : Integer</td>
-                    <td>Get one product</td>
-                </tr>
-                <tr class="bg-primary fw-bold">
-                    <td colspan="4">Users</td>
-                </tr>
-                <tr>
-                    <td>GET</td>
-                    <td>/api/users/company/{company_id}</td>
-                    <td>{company_id} : Integer</td>
-                    <td>Get the list of all users linked to a company</td>
-                </tr>
-                <tr>
-                    <td>GET</td>
-                    <td>/api/users/{user_id}/company/{company_id}</td>
-                    <td>
-                        {user_id} : Integer
-                        <span class="d-block">{company_id} : Integer</span>                    
-                    </td>
-                    <td>Get one user linked to a company</td>
-                </tr>
-                <tr>
-                    <td>POST</td>
-                    <td>/api/users/company/{company_id}</td>
-                    <td>{company_id} : Integer</td>
-                    <td>Create a new user linked to a company</td>
-                </tr>
-                <tr>
-                    <td>DELETE</td>
-                    <td>/api/users/{user_id}/company/{company_id}</td>
-                    <td>
-                        {user_id} : Integer 
-                        <span class="d-block">{company_id} : Integer</span>
-                    </td>
-                    <td>Delete an user linked to a company</td>
-                </tr>
+                    {% for line in discoverabilitie %}
+                        <tr>
+                            <td>{{ line.method }}</td>
+                            <td>{{ line.uri }}</td>
+                            <td>
+                                {% for key, argument in line.arguments %}
+                                    <span class="d-block">{{ key }} : {{ argument }}</span>
+                                {% endfor %}
+                            </td>
+                            <td>{{ line.description }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
     </article>

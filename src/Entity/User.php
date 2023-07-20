@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Trait\SelfDiscoverableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`user`')]
 class User
 {
+    use SelfDiscoverableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
