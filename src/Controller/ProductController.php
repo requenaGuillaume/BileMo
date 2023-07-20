@@ -13,7 +13,7 @@ class ProductController extends AbstractController
 {
     // TODO - Authentication, Richardson's levels ?
 
-    #[Route('/products', name: 'show_all_products', methods: ['GET'])]
+    #[Route('/api/products', name: 'show_all_products', methods: ['GET'])]
     public function showAll(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         $products = $productRepository->findAll();
@@ -24,7 +24,7 @@ class ProductController extends AbstractController
     }
 
 
-    #[Route('/products/{id}', name: 'show_one_product', methods: ['GET'], requirements: ['id' => '\d+'])]
+    #[Route('/api/products/{id}', name: 'show_one_product', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function showOne(Product $product, SerializerInterface $serializer): JsonResponse
     {
         $jsonProduct = $serializer->serialize($product, 'json');
