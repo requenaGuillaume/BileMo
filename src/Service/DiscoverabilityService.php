@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use App\Entity\SelfDiscoverability;
+use App\Interface\DiscoverabilityServiceInterface;
 
-class DiscoverabilityService
+class DiscoverabilityService implements DiscoverabilityServiceInterface
 {
 
     public function setLinksForList(array &$entities, array $entitySelfDiscoverabilityList, bool $isUsersResource = false): void

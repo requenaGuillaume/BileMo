@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Company;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityNotFoundException;
@@ -50,5 +51,15 @@ class UserRepository extends ServiceEntityRepository
         }
 
         return $user;
+   }
+
+   public function findByCompany(Company $company, int $page, ?int $limit): array
+   {
+        return $this->createQueryBuilder('u')
+            ->where('u.company = :company')
+            ->setParameter('company', $company)
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
    }
 }

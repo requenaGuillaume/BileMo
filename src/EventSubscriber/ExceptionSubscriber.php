@@ -22,7 +22,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
         $statusCode = $exception->getStatusCode();
 
-        if(str_contains($requestUri, '/api/')){ 
+        if(str_contains($requestUri, '/api/')){
             $initialMessage = $exception->getMessage();
 
             if($exception instanceof HttpException){

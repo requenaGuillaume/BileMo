@@ -9,6 +9,7 @@ use App\Entity\Company;
 use App\Repository\SelfDiscoverabilityRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscoverabilityService;
+use App\Service\PaginationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UserController extends AbstractController
 {
-    // TODO - Authentication, cache, pagination ?
+    // TODO - Authentication, cache ?
     public function __construct(
         private SerializerInterface $serializer, 
         private UserRepository $userRepository,
@@ -33,9 +34,9 @@ class UserController extends AbstractController
 
 
     #[Route('/api/users/company/{id}', name: 'show_all_users', methods: ['GET'], requirements: ['id' => '\d+'])]
-    public function showAll(Company $company): JsonResponse
+    public function showAll(Request $request, Company $company, PaginationService $paginationService): JsonResponse
     {
-        $users = $this->userRepository->findBy(['company' => $company]);
+        $users = $paginationService->findUsers($request, $company);
 
         $userSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'users']);
         $this->discoverabilityService->setLinksForList($users, $userSelfDiscoverabilityList, true);
