@@ -34,28 +34,59 @@ class PaginationService implements PaginationServiceInterface
         $page = intval($request->get('page'));
 
         if($page){
-            // TODO add cache with pagination
+            
             $limit = intval($request->get('limit', 10));
-    
-            $entities = $company ? $this->userRepo->findByCompany($company, $page, $limit) : $this->productRepo->findAllWithPagination($page, $limit);
+            $entities = $this->findWithPagination($page, $limit, $company);
         }else{
 
-            if($company){
-                $companyId = $company->getId();
-                $cacheId = "users-classic-$companyId";
+            $entities = $this->findWithoutPagination($company);
+        }
 
-                $entities = $this->cachePool->get($cacheId, function(ItemInterface $item) use($company, $companyId){
-                    $item->tag("users-$companyId");
-                    return $this->userRepo->findBy(['company' => $company]);
-                });
-            }else{
-                $cacheId = "products-classic";
+        return $entities;
+    }
 
-                $entities = $this->cachePool->get($cacheId, function(ItemInterface $item){
-                    $item->tag('products');
-                    return $this->productRepo->findAll();
-                });
-            }
+
+    private function findWithPagination(int $page, int $limit, ?Company $company): array
+    {
+        if($company){
+            $companyId = $company->getId();
+            $cacheId = "users-pagination-$companyId-$page-$limit";
+
+            $entities = $this->cachePool->get($cacheId, function(ItemInterface $item) use($company, $companyId, $page, $limit){
+                $item->tag("users-$companyId");
+                return $this->userRepo->findByCompany($company, $page, $limit);
+            });
+        }else{
+            $cacheId = "products-$page-$limit";
+            $entities = $this->productRepo->findAllWithPagination($page, $limit);
+
+            $entities = $this->cachePool->get($cacheId, function(ItemInterface $item) use($page, $limit){
+                $item->tag("products");
+                return $this->productRepo->findAllWithPagination($page, $limit);
+            });
+        }
+
+        return $entities;
+    }
+
+
+    private function findWithoutPagination(?Company $company): array
+    {
+        if($company){
+            $companyId = $company->getId();
+            $cacheId = "users-classic-$companyId";
+
+            $entities = $this->cachePool->get($cacheId, function(ItemInterface $item) use($company, $companyId){
+                $item->tag("users-$companyId");
+                return $this->userRepo->findBy(['company' => $company]);
+            });
+        }else{
+            $cacheId = "products-classic";
+
+            $entities = $this->cachePool->get($cacheId, function(ItemInterface $item){
+                $item->tag('products');
+                return $this->productRepo->findAll();
+            });
         }
 
         return $entities;
