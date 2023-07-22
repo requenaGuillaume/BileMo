@@ -102,6 +102,15 @@ class AppFixtures extends Fixture
             $manager->persist($company);
         }
 
+        $login = new SelfDiscoverability();
+        $login->setResource('login')
+            ->setUri('/api/login')
+            ->setMethod('POST')
+            ->setArguments([])
+            ->setDescription('Log in to get your authentication token');
+
+        $manager->persist($login);
+
         foreach(self::PRODUCTS as $product){
             $selfDiscoverability = new SelfDiscoverability();
             $selfDiscoverability->setResource('products')

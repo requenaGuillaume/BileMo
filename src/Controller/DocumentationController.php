@@ -13,6 +13,7 @@ class DocumentationController extends AbstractController
     public function index(SelfDiscoverabilityRepository $selfDiscoverabilityRepository): Response
     {
         $discoverabilities = [
+            'login' => $selfDiscoverabilityRepository->findBy(['resource' => 'login']),
             'products' => $selfDiscoverabilityRepository->findBy(['resource' => 'products']),
             'users' => $selfDiscoverabilityRepository->findBy(['resource' => 'users'])
         ];
