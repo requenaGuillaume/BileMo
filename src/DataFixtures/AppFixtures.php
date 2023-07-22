@@ -81,7 +81,7 @@ class AppFixtures extends Fixture
             $company->setName($faker->word())
                 ->setEmail($faker->email())
                 ->setRoles([])
-                ->setPassword($this->hasher->hashPassword($company, $faker->word()));
+                ->setPassword($this->hasher->hashPassword($company, 'password'));
 
             for($u = 1; $u < 10; $u++){
                 $user = new User();
