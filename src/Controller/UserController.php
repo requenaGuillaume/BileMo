@@ -22,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UserController extends AbstractController
 {
-    // TODO - Authentication, cache ?
+    // TODO - cache ?
     public function __construct(
         private SerializerInterface $serializer, 
         private UserRepository $userRepository,
@@ -78,7 +78,7 @@ class UserController extends AbstractController
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
-
+    // TODO clear cache when adding a new user
     #[Route('/api/users/company/{id}', name: 'create_user', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function create(
         Request $request, 
