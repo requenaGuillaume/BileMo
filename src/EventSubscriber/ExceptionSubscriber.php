@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -16,7 +17,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
     }
 
-    public function onKernelException($event): void
+    public function onKernelException(ExceptionEvent $event): void
     {
         $requestUri = $event->getRequest()->getRequestUri();
         $exception = $event->getThrowable();
