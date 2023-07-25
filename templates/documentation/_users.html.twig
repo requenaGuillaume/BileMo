@@ -1,0 +1,123 @@
+<h2 class="text-center mt-2 mb-5" id="users">Users example</h2>
+
+<div class="mt-5">
+    <p class="text-center">
+        <span class="fw-bold">GET /api/users/company/1</span>
+        will give a status code 200 and will output :
+    </p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                [
+                    {
+                        "id": 1,
+                        "lastName": "Flatley",
+                        "firstName": "Brionna",
+                        "email": "earline.reinger@rolfson.info",
+                        "phoneNumber": "+1-484-508-9862",
+                        "createdAt": "2023-07-14T04:04:35+00:00",
+                        "company": {
+                            "id": 1,
+                            "name": "ut"
+                        }
+                    },
+                    {
+                        "id": 2,
+                        "lastName": "Hane",
+                        "firstName": "Samanta",
+                        "email": "raynor.sasha@hotmail.com",
+                        "phoneNumber": "352-296-3202",
+                        "createdAt": "2023-07-12T04:50:42+00:00",
+                        "company": {
+                            "id": 1,
+                            "name": "ut"
+                        }
+                    },
+                    ...
+                    {
+                        "id": 85,
+                        "lastName": "L'asticot",
+                        "firstName": "Coco",
+                        "email": "coco@rest.com",
+                        "phoneNumber": "010101010101",
+                        "createdAt": "2023-07-11T19:40:25+00:00",
+                        "company": {
+                            "id": 1,
+                            "name": "ut"
+                        }
+                    }
+                ]
+            </pre>
+        </code>
+    </div>
+</div>
+
+<div class="mt-5">
+    <p class="text-center">
+        <span class="fw-bold">GET /api/users/1/company/1</span>
+        will give a status code 200 and will output :
+    </p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                {
+                    "id": 1,
+                    "lastName": "Flatley",
+                    "firstName": "Brionna",
+                    "email": "earline.reinger@rolfson.info",
+                    "phoneNumber": "+1-484-508-9862",
+                    "createdAt": "2023-07-14T04:04:35+00:00",
+                    "company": {
+                        "id": 1,
+                        "name": "ut"
+                    }
+                }
+            </pre>
+        </code>
+    </div>
+</div>
+
+<div class="mt-5">
+    <p class="text-center">
+        <span class="fw-bold">POST /api/users/company/1</span>
+        with :
+    </p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                {
+                    "lastName": "Pascal",
+                    "firstName": "La Dalle",
+                    "email": "pascale-ladalle@symfony.fr",
+                    "phoneNumber": "+33609758518"
+                }
+            </pre>
+        </code>
+    </div>
+    <p class="text-center pt-2">Will give a status code 200 and will output :</p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                {
+                    "id": 86,
+                    "lastName": "Pascal",
+                    "firstName": "La Dalle",
+                    "email": "pascale-ladalle@symfony.fr",
+                    "phoneNumber": "+33609758518",
+                    "createdAt": "2023-07-14T15:57:18+00:00",
+                    "company": {
+                        "id": 1,
+                        "name": "ut"
+                    }
+                }
+            </pre>
+        </code>
+    </div>
+</div>
+
+<div class="mt-5 mb-5">
+    <p class="text-center">
+        <span class="fw-bold">DELETE /api/users/86/company/1</span>
+        will output nothing and will give a status code 204
+    </p>
+</div>
