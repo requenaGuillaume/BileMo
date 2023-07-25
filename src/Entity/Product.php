@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Trait\SelfDiscoverableTrait;
+use App\TraitClass\SelfDiscoverableTrait;
 use App\Repository\ProductRepository;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]

@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\Company;
 use App\Repository\ProductRepository;
-use App\Interface\PaginationServiceInterface;
+use App\InterfaceClass\PaginationServiceInterface;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\ItemInterface;

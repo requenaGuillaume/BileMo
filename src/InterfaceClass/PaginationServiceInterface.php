@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interface;
+namespace App\InterfaceClass;
 
 use App\Entity\Company;
 use Symfony\Component\HttpFoundation\Request;
