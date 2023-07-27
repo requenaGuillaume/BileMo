@@ -10,6 +10,7 @@ use App\Entity\Product;
 use App\Entity\SelfDiscoverability;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -55,6 +56,9 @@ class AppFixtures extends Fixture
         ]
     ];
 
+    public function __construct(private UserPasswordHasherInterface $hasher)
+    {}
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
@@ -64,7 +68,7 @@ class AppFixtures extends Fixture
 
             $product->setBrand($faker->word())
                 ->setModel($faker->name())
-                ->setPriceHtInCents($faker->numberBetween(30000, 200000))
+                ->setPricePreVatInCents($faker->numberBetween(30000, 200000))
             ;
 
             $manager->persist($product);
@@ -74,7 +78,10 @@ class AppFixtures extends Fixture
         for($c = 1; $c < 10; $c++){
             $company = new Company();
 
-            $company->setName($faker->word());
+            $company->setName($faker->word())
+                ->setEmail($faker->email())
+                ->setRoles([])
+                ->setPassword($this->hasher->hashPassword($company, 'password'));
 
             for($u = 1; $u < 10; $u++){
                 $user = new User();
@@ -94,6 +101,15 @@ class AppFixtures extends Fixture
 
             $manager->persist($company);
         }
+
+        $login = new SelfDiscoverability();
+        $login->setResource('login')
+            ->setUri('/api/login')
+            ->setMethod('POST')
+            ->setArguments([])
+            ->setDescription('Log in to get your authentication token');
+
+        $manager->persist($login);
 
         foreach(self::PRODUCTS as $product){
             $selfDiscoverability = new SelfDiscoverability();

@@ -1,13 +1,14 @@
 {% extends "base.html.twig" %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" href="assets/css/documentation.css">
-{% endblock %}
-
 {% block body %}
     <h1 class="text-center mt-5 mb-5">Welcome to BileMo API documentation</h1>
 
-    <article class="bg-light w-75 mt-5 p-4 pt-2 mx-auto border">
+    <p class="text-center">
+        BileMo is a private api that provide top of the line
+        mobile phones to sell for companies.
+    </p>
+
+    <article class="rounded bg-light w-75 mt-5 p-4 pt-2 mx-auto border">
         <h2 class="text-center mb-5" id="summary">Summary</h2>
         <table class="mx-auto table table-striped table-bordered w-100">
             <thead>
@@ -38,24 +39,52 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <h3 class="text-center mt-4">Pagination</h3>
-        <p>If you want, you can use pagination on /api/products and /api/users/company/{company_id}.</p>
-        <p>
-            By default, pagination will not be used. You can add query parameter "?page=1", 
-            then the default max result will be up to 10 items.
-        </p>
-        <p>You can add the "limit" parameter like : "?page=1&limit=5" if you want to set the max result to 5 items</p>
-        <p>
-            Examples : 
-            <span class="d-block">/api/products?page=1</span>
-            <span class="d-block">/api/products?page=1&limit=5</span>
-            <span class="d-block">/api/users/company/10?page=2</span>
-            <span class="d-block">/api/users/company/10?page=2&limit=15</span>
-        </p>
     </article>
 
-    <article class="bg-light w-75 mt-5 pb-4 mx-auto border">
+    <article class="rounded bg-light w-75 mt-5 pb-4 mx-auto border">
+        <h2 id="auth" class="text-center mt-4 mb-4">Authentication</h2>
+        <div class="p-4">
+            <p class="text-center"><span class="fw-bold">POST /api/login</span> with your username and password.</p>
+            <p>Example :</p>
+            <div class="border w-75 mx-auto pt-4 bg-dark">
+                <code>
+                    <pre>
+                        {
+                            "username": "derek36@feeney.com",
+                            "password": "password"
+                        }
+                    </pre>
+                </code>
+            </div>
+            <p class="mt-4">And it will give you a token to authenticate.</p>
+            <p>Token should not be shared, and it as an expiration time (1 hour).</p>
+            <p>
+                When you have your token, you will be able to add an Header "Authorization" which has
+                value "bearer YourTokenHere".
+            </p>
+        </div>
+    </article>
+
+    <article class="rounded bg-light w-75 mt-5 pb-4 mx-auto border">
+        <h2 id="pagination" class="text-center mt-4 mb-4">Pagination</h2>
+        <div class="p-4">
+            <p>If you want, you can use pagination on /api/products and /api/users/company/{company_id}.</p>
+            <p>
+                By default, pagination will not be used. You can add query parameter "?page=1", 
+                then the default max result will be up to 10 items.
+            </p>
+            <p>You can add the "limit" parameter like : "?page=1&limit=5" if you want to set the max result to 5 items</p>
+            <p>
+                Examples : 
+                <span class="d-block">/api/products?page=1</span>
+                <span class="d-block">/api/products?page=1&limit=5</span>
+                <span class="d-block">/api/users/company/10?page=2</span>
+                <span class="d-block">/api/users/company/10?page=2&limit=15</span>
+            </p>
+        </div>
+    </article>
+
+    <article class="rounded bg-light w-75 mt-5 pb-4 mx-auto border">
         <h2 class="text-center mt-2 mb-5" id="products">Products example</h2>
         <div>
             <p class="text-center">
@@ -70,20 +99,20 @@
                                 "id": 1,
                                 "brand": "eaque",
                                 "model": "Elena Koelpin",
-                                "priceHtInCents": 166768
+                                "pricePreVatInCents": 166768
                             },
                             {
                                 "id": 2,
                                 "brand": "harum",
                                 "model": "Mr. Joaquin Lebsack PhD",
-                                "priceHtInCents": 69784
+                                "pricePreVatInCents": 69784
                             },
                             ...
                             {
                                 "id": 14,
                                 "brand": "minus",
                                 "model": "Alek Bogan",
-                                "priceHtInCents": 52972
+                                "pricePreVatInCents": 52972
                             }
                         ]
                     </pre>
@@ -103,7 +132,7 @@
                             "id": 1,
                             "brand": "eaque",
                             "model": "Elena Koelpin",
-                            "priceHtInCents": 166768
+                            "pricePreVatInCents": 166768
                         }
                     </pre>
                 </code>
@@ -111,7 +140,7 @@
         </div>
     </article>
 
-    <article class="bg-light w-75 mt-5 pb-4 mx-auto border">
+    <article class="rounded bg-light w-75 mt-5 pb-4 mx-auto border">
         <h2 class="text-center mt-2 mb-5" id="users">Users example</h2>
 
         <div class="mt-5">
