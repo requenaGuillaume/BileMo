@@ -6,14 +6,15 @@ use DateTime;
 use App\Entity\User;
 use DateTimeImmutable;
 use App\Entity\Company;
-use App\Repository\SelfDiscoverabilityRepository;
 use App\Repository\UserRepository;
-use App\Service\DiscoverabilityService;
 use App\Service\PaginationService;
+use App\Service\DiscoverabilityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\SelfDiscoverabilityRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -22,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UserController extends AbstractController
 {
-    // TODO - Authentication, cache ?
+
     public function __construct(
         private SerializerInterface $serializer, 
         private UserRepository $userRepository,
@@ -83,7 +84,8 @@ class UserController extends AbstractController
     public function create(
         Request $request, 
         Company $company,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        TagAwareCacheInterface $cachePool
     ): JsonResponse
     {
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
@@ -103,11 +105,15 @@ class UserController extends AbstractController
         $this->em->persist($user);
         $this->em->flush();
 
+        $companyId = $company->getId();
+
         $userSelfDiscoverabilityList = $this->selfDiscoverabilityRepository->findBy(['resource' => 'users']);
-        $links = $this->discoverabilityService->getLinks($userSelfDiscoverabilityList, $company->getId(), $user->getId());
+        $links = $this->discoverabilityService->getLinks($userSelfDiscoverabilityList, $companyId, $user->getId());
         $user->setLinks($links);
 
         $jsonUser = $this->serializer->serialize($user, 'json', ['groups' => 'showUsers']);
+
+        $cachePool->invalidateTags(["users-$companyId", "users-pagination-$companyId"]);
 
         return new JsonResponse($jsonUser, JsonResponse::HTTP_CREATED, [], true);
     }

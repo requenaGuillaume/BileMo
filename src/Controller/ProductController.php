@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProductController extends AbstractController
 {
-    // TODO - Authentication, cache ?
+
     public function __construct(
         private SerializerInterface $serializer, 
         private SelfDiscoverabilityRepository $selfDiscoverabilityRepository,

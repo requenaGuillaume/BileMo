@@ -1,0 +1,30 @@
+<h2 class="text-center mb-5" id="summary">Summary</h2>
+<table class="mx-auto table table-striped table-bordered w-100">
+    <thead>
+        <tr class="bg-dark text-light">
+            <th>Method</th>
+            <th>URI</th>
+            <th>Arguments</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for key, discoverabilitie in discoverabilities %}
+        <tr class="bg-primary fw-bold">
+            <td colspan="4">{{ key|capitalize }}</td>
+        </tr>
+            {% for line in discoverabilitie %}
+                <tr>
+                    <td>{{ line.method }}</td>
+                    <td>{{ line.uri }}</td>
+                    <td>
+                        {% for key, argument in line.arguments %}
+                            <span class="d-block">{{ key }} : {{ argument }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>{{ line.description }}</td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>

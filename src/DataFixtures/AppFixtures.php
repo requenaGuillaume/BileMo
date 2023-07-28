@@ -74,7 +74,6 @@ class AppFixtures extends Fixture
             $manager->persist($product);
         }
 
-
         for($c = 1; $c < 10; $c++){
             $company = new Company();
 

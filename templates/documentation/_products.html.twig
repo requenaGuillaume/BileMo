@@ -1,0 +1,53 @@
+<h2 class="text-center mt-2 mb-5" id="products">Products example</h2>
+<div>
+    <p class="text-center">
+        <span class="fw-bold">GET /api/products</span> 
+        will give a status code 200 and will output :
+    </p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                [
+                    {
+                        "id": 1,
+                        "brand": "eaque",
+                        "model": "Elena Koelpin",
+                        "pricePreVatInCents": 166768
+                    },
+                    {
+                        "id": 2,
+                        "brand": "harum",
+                        "model": "Mr. Joaquin Lebsack PhD",
+                        "pricePreVatInCents": 69784
+                    },
+                    ...
+                    {
+                        "id": 14,
+                        "brand": "minus",
+                        "model": "Alek Bogan",
+                        "pricePreVatInCents": 52972
+                    }
+                ]
+            </pre>
+        </code>
+    </div>
+</div>
+
+<div class="mt-5">
+    <p class="text-center">
+        <span class="fw-bold">GET /api/products/1</span>
+        will give a status code 200 and will output :
+    </p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                {
+                    "id": 1,
+                    "brand": "eaque",
+                    "model": "Elena Koelpin",
+                    "pricePreVatInCents": 166768
+                }
+            </pre>
+        </code>
+    </div>
+</div>

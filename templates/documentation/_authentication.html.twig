@@ -1,0 +1,21 @@
+<h2 id="auth" class="text-center mt-4 mb-4">Authentication</h2>
+<div class="p-4">
+    <p class="text-center"><span class="fw-bold">POST /api/login</span> with your username and password.</p>
+    <p>Example :</p>
+    <div class="border w-75 mx-auto pt-4 bg-dark">
+        <code>
+            <pre>
+                {
+                    "username": "derek36@feeney.com",
+                    "password": "password"
+                }
+            </pre>
+        </code>
+    </div>
+    <p class="mt-4">And it will give you a token to authenticate.</p>
+    <p>Token should not be shared, and it as an expiration time (1 hour).</p>
+    <p>
+        When you have your token, you will be able to add an Header "Authorization" which has
+        value "bearer YourTokenHere".
+    </p>
+</div>

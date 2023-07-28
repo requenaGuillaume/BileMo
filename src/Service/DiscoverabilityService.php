@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\SelfDiscoverability;
-use App\Interface\DiscoverabilityServiceInterface;
+use App\InterfaceClass\DiscoverabilityServiceInterface;
 
 class DiscoverabilityService implements DiscoverabilityServiceInterface
 {
