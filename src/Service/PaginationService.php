@@ -53,11 +53,11 @@ class PaginationService implements PaginationServiceInterface
             $cacheId = "users-pagination-$companyId-$page-$limit";
 
             $entities = $this->cachePool->get($cacheId, function(ItemInterface $item) use($company, $companyId, $page, $limit){
-                $item->tag("users-$companyId");
+                $item->tag(["users-$companyId"]);
                 return $this->userRepo->findByCompany($company, $page, $limit);
             });
         }else{
-            $cacheId = "products-$page-$limit";
+            $cacheId = "products-pagination-$page-$limit";
             $entities = $this->productRepo->findAllWithPagination($page, $limit);
 
             $entities = $this->cachePool->get($cacheId, function(ItemInterface $item) use($page, $limit){
@@ -81,7 +81,7 @@ class PaginationService implements PaginationServiceInterface
                 return $this->userRepo->findBy(['company' => $company]);
             });
         }else{
-            $cacheId = "products-classic";
+            $cacheId = 'products-classic';
 
             $entities = $this->cachePool->get($cacheId, function(ItemInterface $item){
                 $item->tag('products');

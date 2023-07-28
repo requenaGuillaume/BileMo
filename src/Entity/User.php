@@ -8,9 +8,11 @@ use App\Repository\UserRepository;
 use App\TraitClass\SelfDiscoverableTrait;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[UniqueEntity('email')]
 class User
 {
     use SelfDiscoverableTrait;

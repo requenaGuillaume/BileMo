@@ -113,7 +113,7 @@ class UserController extends AbstractController
 
         $jsonUser = $this->serializer->serialize($user, 'json', ['groups' => 'showUsers']);
 
-        $cachePool->invalidateTags(["users-$companyId"]);
+        $cachePool->invalidateTags(["users-$companyId", "users-pagination-$companyId"]);
 
         return new JsonResponse($jsonUser, JsonResponse::HTTP_CREATED, [], true);
     }
