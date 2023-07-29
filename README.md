@@ -38,11 +38,11 @@ Run the fixtures using terminal command : "symfony console d:f:l"
 Change JWT_PASSPHRASE in file .env.local
 
 Generate private token in a config/jwt/private.pem file with terminal command :  
-openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+"openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096"
 Then enter your pass phrase
 
 Generate public token in a config/jwt/public.pem file with terminal command :
-openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
+"openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout"
 Then enter your pass phrase
 
 If pem files has not been created, create the manually and redo the previous commands.
