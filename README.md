@@ -49,7 +49,7 @@ If pem files has not been created, create the manually and redo the previous com
 
 ## Api classic rules
 
-Do not forget "Content-Type application/json", "Authorization" : bearer YourToken etc...
+Do not forget "Content-Type application/json", "Authorization" : "bearer YourToken" etc...
 
 ## You're done
 
